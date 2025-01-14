@@ -1,4 +1,4 @@
-#  Setup K8-Cluster using kubeadm 
+#  Setting up K8-Cluster
 
 ### 1. Update System Packages [run on Master & Nodes ]
 
