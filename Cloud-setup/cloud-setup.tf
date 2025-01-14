@@ -16,7 +16,7 @@ variable "location" {
 }
 
 variable "vm_names" {
-  default = ["master", "node1", "node2", "sonar", "nexus","jenkins"]
+  default = ["master", "node1", "node2", "sonar", "nexus", "jenkins"]
 }
 
 # Resource Group
@@ -106,6 +106,11 @@ resource "azurerm_network_security_group" "dev_nsg" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+}
+
+resource "azurerm_subnet_network_security_group_association" "dev_nic_assoc" {
+  subnet_id                 = azurerm_subnet.dev_subnet.id
+  network_security_group_id = azurerm_network_security_group.dev_nsg.id
 }
 
 # Public IP Addresses
