@@ -59,7 +59,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ```
 
-### 10. Deploy Ingress Controller (NGINX) [run on Master]
+### 10. Turn off swap for Performance and Stability [run on Master]
 
 ```bash
 sudo swapoff -a
