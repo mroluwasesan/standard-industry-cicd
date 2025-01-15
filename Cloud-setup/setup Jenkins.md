@@ -1,4 +1,4 @@
-## Installing Jenkins on Ubuntu
+## Setting up Jenkins
 
 Create a bash script using the command
 
@@ -6,7 +6,7 @@ Create a bash script using the command
 vim jenkin-setup.sh
 ```
 
-Pastthe script below and save
+Past the script below and save
 
 This script will automate the installation process of OpenJDK 17 JRE Headless and Jenkins.
 

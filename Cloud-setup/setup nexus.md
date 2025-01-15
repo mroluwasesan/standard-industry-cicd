@@ -1,10 +1,11 @@
-# SetUp Nexus
+# Setting up Nexus
 
 Create a bash script using the command
 
 ```bash
 vim install-docker.sh
 ```
+Past the script below and save
 
 ```bash
 #!/bin/bash
