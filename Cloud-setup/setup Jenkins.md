@@ -1,6 +1,6 @@
 ## Installing Jenkins on Ubuntu
 
-Create a bash script using 
+Create a bash script using the command
 
 ```bash
 vim jenkin-setup.sh
