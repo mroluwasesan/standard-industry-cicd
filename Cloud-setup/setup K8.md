@@ -62,5 +62,11 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ### 10. Deploy Ingress Controller (NGINX) [run on Master]
 
 ```bash
+sudo swapoff -a
+```
+
+### 11. Deploy Ingress Controller (NGINX) [run on Master]
+
+```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.49.0/deploy/static/provider/baremetal/deploy.yaml
 ```
