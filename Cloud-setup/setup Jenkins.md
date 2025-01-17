@@ -85,3 +85,53 @@ Then, you can run the script using:
 ```bash
 ./install-docker.sh
 ```
+
+
+
+
+sudo apt-get update
+sudo apt-get install trivy -y
+
+
+
+
+## Installing trivy
+
+Create a bash script using the command
+
+```bash
+vim trivy-install.sh
+```
+
+```bash
+#!/bin/bash
+
+# Install prerequisites
+sudo apt-get install wget apt-transport-https gnupg lsb-release
+
+# Add Trivy's public signing key
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+
+# Add Trivy's repository to APT sources
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+
+# Update package manager repositories
+sudo apt-get update
+
+# Install Trivy
+sudo apt-get install trivy -y
+```
+
+Save this script in a file, for example, `trivy-install.sh`, and make it executable using:
+
+```bash
+chmod +x trivy-install.sh
+```
+
+Then, you can run the script using:
+
+```bash
+./trivy-install.sh
+```
+
+This script will automate the installation process of OpenJDK 17 JRE Headless, Trivy and Jenkins.
