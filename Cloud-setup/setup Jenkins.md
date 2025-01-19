@@ -87,14 +87,6 @@ Then, you can run the script using:
 ```
 
 
-
-
-sudo apt-get update
-sudo apt-get install trivy -y
-
-
-
-
 ## Installing trivy
 
 Create a bash script using the command
@@ -134,4 +126,37 @@ Then, you can run the script using:
 ./trivy-install.sh
 ```
 
-This script will automate the installation process of OpenJDK 17 JRE Headless, Trivy and Jenkins.
+## Installing kubectl
+
+Create a bash script using the command
+
+```bash
+vim k8-setup.sh
+```
+
+```bash
+#!/bin/bash
+
+# Install prerequisites
+
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin
+kubectl version --short --client
+
+```
+Save this script in a file, for example, `k8-setup.sh`, and make it executable using:
+
+```bash
+chmod +x k8-setup.sh
+```
+
+Then, you can run the script using:
+
+```bash
+./k8-setup.sh
+```
+
+
+This script will automate the installation process of OpenJDK 17 JRE Headless, Trivy, kubectl and Jenkins.
