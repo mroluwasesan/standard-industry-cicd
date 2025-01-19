@@ -137,7 +137,7 @@ pipeline {
                     withMaven(
                         globalMavenSettingsConfig: 'global-settings',
                         jdk: 'jdk17',
-                        maven: 'maven3',
+                        maven: 'maven',
                         traceability: true
                     ) {
                         sh "mvn deploy"
