@@ -52,12 +52,13 @@ After installing these plugins, you may need to configure them according to your
 
 ```groovy
 
+
 pipeline {
     agent any
     
     tools {
         jdk 'jdk17'
-        maven 'maven3'
+        maven 'maven'
     }
 
     enviornment {
@@ -71,93 +72,140 @@ pipeline {
             }
         }
         
+        stage('Navigate to Project Directory') {
+            steps {
+                dir('Boardgame') {
+                    echo 'Navigated to Boardgame project directory.'
+                }
+            }
+        }
+        
         stage('Compile') {
             steps {
-                sh "mvn compile"
+                dir('Boardgame') {
+                    sh "mvn compile"
+                }
             }
         }
         
         stage('Test') {
             steps {
-                sh "mvn test"
+                dir('Boardgame') {
+                    sh "mvn test"
+                }
             }
         }
         
         stage('File System Scan') {
             steps {
-                sh "trivy fs --format table -o trivy-fs-report.html ."
-            }
-        }
-        
-        stage('SonarQube Analsyis') {
-            steps {
-                withSonarQubeEnv('sonar') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=BoardGame -Dsonar.projectKey=BoardGame \
-                            -Dsonar.java.binaries=. '''
+                dir('Boardgame') {
+                    sh "trivy fs --format table -o trivy-fs-report.html ."
                 }
             }
         }
         
+        stage('SonarQube Analysis') {
+            steps {
+                dir('Boardgame') {
+                    withSonarQubeEnv('sonar') {
+                        sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=BoardGame -Dsonar.projectKey=BoardGame \
+                                -Dsonar.java.binaries=. '''
+                    }
+                }
+            }
+        }
+
         stage('Quality Gate') {
             steps {
                 script {
-                  waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token' 
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
             }
         }
         
         stage('Build') {
             steps {
-               sh "mvn package"
+                dir('Boardgame') {
+                    sh "mvn package"
+                }
             }
         }
         
         stage('Publish To Nexus') {
             steps {
-               withMaven(globalMavenSettingsConfig: 'global-settings', jdk: 'jdk17', maven: 'maven3', mavenSettingsConfig: '', traceability: true) {
-                    sh "mvn deploy"
+                dir('Boardgame') {
+                    withMaven(
+                        globalMavenSettingsConfig: 'global-settings',
+                        jdk: 'jdk17',
+                        maven: 'maven3',
+                        traceability: true
+                    ) {
+                        sh "mvn deploy"
+                    }
                 }
             }
         }
         
         stage('Build & Tag Docker Image') {
             steps {
-               script {
-                   withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                            sh "docker build -t adijaiswal/boardshack:latest ."
+                dir('Boardgame') {
+                    script {
+                        withDockerRegistry(credentialsId:  'docker-cred', toolName: 'docker') {
+                            sh "docker build -t lordrolex/boardshack:latest ."
+                        }
                     }
-               }
+                }
             }
         }
         
         stage('Docker Image Scan') {
             steps {
-                sh "trivy image --format table -o trivy-image-report.html adijaiswal/boardshack:latest "
+                sh "trivy image --format table -o trivy-image-report.html lordrolex/boardshack:latest"
             }
         }
         
         stage('Push Docker Image') {
             steps {
-               script {
-                   withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                            sh "docker push adijaiswal/boardshack:latest"
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker push lordrolex/boardshack:latest"
                     }
-               }
+                }
             }
         }
+
         stage('Deploy To Kubernetes') {
             steps {
-               withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://172.31.8.146:6443') {
+                dir('Boardgame') { // Navigate to the Boardgame folder for deployment-service.yaml
+                    withKubeConfig(
+                        caCertificate: '', 
+                        clusterName: 'kubernetes', 
+                        contextName: '', 
+                        credentialsId: 'k8-cred', 
+                        namespace: 'webapps', 
+                        restrictKubeConfigAccess: false, 
+                        serverUrl: 'https://10.0.1.4:6443'
+                    ) {
                         sh "kubectl apply -f deployment-service.yaml"
+                    }
                 }
             }
         }
         
         stage('Verify the Deployment') {
             steps {
-               withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://172.31.8.146:6443') {
-                        sh "kubectl get pods -n webapps"
-                        sh "kubectl get svc -n webapps"
+                withKubeConfig(
+                    caCertificate: '', 
+                    clusterName: 'kubernetes', 
+                    contextName: '', 
+                    credentialsId: 'k8-cred', 
+                    namespace: 'webapps', 
+                    restrictKubeConfigAccess: false, 
+                    serverUrl: 'https://10.0.1.4:6443'
+                ) {
+                    sh "kubectl get pods -n webapps"
+                    sh "kubectl get svc -n webapps"
+                    
                 }
             }
         }
@@ -189,7 +237,7 @@ pipeline {
             emailext (
                 subject: "${jobName} - Build ${buildNumber} - ${pipelineStatus.toUpperCase()}",
                 body: body,
-                to: 'jaiswaladi246@gmail.com',
+                to: 'lordrolex4u@gmail.com',
                 from: 'jenkins@example.com',
                 replyTo: 'jenkins@example.com',
                 mimeType: 'text/html',
