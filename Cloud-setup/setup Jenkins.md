@@ -143,7 +143,8 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 
 chmod +x ./kubectl
 sudo mv ./kubectl /usr/local/bin
-kubectl version --short --client
+kubectl version --client
+
 
 ```
 Save this script in a file, for example, `k8-setup.sh`, and make it executable using:
