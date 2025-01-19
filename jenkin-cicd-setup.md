@@ -138,6 +138,7 @@ pipeline {
                         globalMavenSettingsConfig: 'global-settings',
                         jdk: 'jdk17',
                         maven: 'maven',
+                        mavenSettingsConfig: '',
                         traceability: true
                     ) {
                         sh "mvn deploy"
