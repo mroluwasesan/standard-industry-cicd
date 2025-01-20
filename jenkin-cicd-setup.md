@@ -134,18 +134,13 @@ pipeline {
         stage('Publish To Nexus') {
             steps {
                 dir('Boardgame') {
-                    withMaven(
-                        globalMavenSettingsConfig: 'global-settings',
-                        jdk: 'jdk17',
-                        maven: 'maven',
-                        mavenSettingsConfig: '',
-                        traceability: true
-                    ) {
+                    configFileProvider([configFile(fileId: 'global-settings', variable: 'global-settings')]) {
                         sh "mvn deploy"
                     }
                 }
             }
         }
+
         
         stage('Build & Tag Docker Image') {
             steps {
